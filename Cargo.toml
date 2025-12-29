@@ -1,0 +1,50 @@
+[workspace]
+resolver = "2"
+members = [
+    "app",
+    # "testing",
+    # "crates/handler",
+    # "crates/middleware",
+    # "crates/entity",
+    # "crates/types",
+    # "crates/utils",
+]
+default-members = [
+    "app",
+    # "testing",
+]
+
+[workspace.package]
+version = "0.1.0-rc0"
+authors = ["thinkgo <thinkgo@aliyun.com>"]
+edition = "2024"
+rust-version = "1.92.0"
+description = "nova-rs is an admin backend."
+keywords =[
+    "backend"
+]
+license = "Apache-2.0"
+readme = "README.md"
+homepage = "https://github.com/thinkgos/nova-rs"
+repository = "https://github.com/thinkgos/nova-rs"
+
+# [workspace.build-dependencies]
+
+# [workspace.dev-dependencies]
+
+[workspace.dependencies]
+axum = "0.8"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+# unused = "allow" # for experimental dev
+
+[profile.dev.package."*"]
+opt-level = "z"
+
+[profile.release]
+opt-level = "z"
+strip = true
+lto = true
+codegen-units = 1
+panic = "abort"
