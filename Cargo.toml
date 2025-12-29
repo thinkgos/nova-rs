@@ -3,11 +3,12 @@ resolver = "2"
 members = [
     "app",
     # "testing",
-    # "crates/handler",
-    # "crates/middleware",
-    # "crates/entity",
-    # "crates/types",
-    # "crates/utils",
+    "crates/configuration",
+    "crates/handlers",
+    "crates/middlewares",
+    "crates/entity",
+    "crates/types",
+    "crates/core",
 ]
 default-members = [
     "app",
@@ -33,7 +34,44 @@ repository = "https://github.com/thinkgos/nova-rs"
 # [workspace.dev-dependencies]
 
 [workspace.dependencies]
+# web
 axum = "0.8"
+jsonwebtoken = "10"
+
+# runtime
+tokio = { version = "1.0", features = ["full"] }
+
+# utilities
+rand = "0.9"
+bytes = "1.10"
+config = "0.15"
+secrecy = {version = "0.10", features = ["serde"]}
+strum = {version = "0.27", features = ["derive"]}
+
+# error 
+anyhow = "1"
+thiserror = "2"
+
+# serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1.0"
+
+# tracing
+log = "0.4"
+tracing = {version = "0.1", features = ["log"]}
+tracing-subscriber = { version = "0.3", features = ["registry", "env-filter"] }
+tracing-bunyan-formatter = "0.3"
+tracing-log = "0.2"
+# tracing-actix-web = "0.7"
+
+# swagger
+utoipa = { version = "5.3", features = ["axum_extras", "chrono"] }
+utoipa-swagger-ui = { version = "9.0", features = ["axum"] }
+
+# orm
+sea-orm = {version = "1", features = [ "sqlx-mysql", "runtime-tokio-rustls", "macros"]}
+sea-query = "0.32"
+
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

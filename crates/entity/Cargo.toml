@@ -1,5 +1,5 @@
 [package]
-name = "app"
+name = "entity"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -12,18 +12,6 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
-configuration = {path = "../crates/configuration"}
-
-tokio.workspace = true
-axum.workspace = true
-serde_json.workspace = true
-anyhow.workspace = true
-
-# tracing
-tracing.workspace = true
-tracing-subscriber.workspace = true
-tracing-bunyan-formatter.workspace = true
-tracing-log.workspace = true
 
 [lints]
 workspace = true

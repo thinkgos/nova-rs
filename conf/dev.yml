@@ -1,0 +1,6 @@
+app:
+  host: 0.0.0.0
+  port: 9527
+
+database:
+  url: "mysql://root:123456@127.0.0.1:3006/admin?ssl-mode=false"
