@@ -16,7 +16,7 @@ default-members = [
 ]
 
 [workspace.package]
-version = "0.1.0-rc0"
+version = "0.1.0-rc0"   
 authors = ["thinkgo <thinkgo@aliyun.com>"]
 edition = "2024"
 rust-version = "1.92.0"
@@ -59,10 +59,7 @@ serde_json = "1.0"
 # tracing
 log = "0.4"
 tracing = {version = "0.1", features = ["log"]}
-tracing-subscriber = { version = "0.3", features = ["registry", "env-filter"] }
-tracing-bunyan-formatter = "0.3"
-tracing-log = "0.2"
-# tracing-actix-web = "0.7"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json", "time", "local-time"] }
 
 # swagger
 utoipa = { version = "5.3", features = ["axum_extras", "chrono"] }

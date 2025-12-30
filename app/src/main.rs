@@ -8,7 +8,7 @@ use configuration::Configuration;
 
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
-    telemetry::init_subscriber(telemetry::get_subscriber("nova", "debug", io::stdout));
+    telemetry::init_subscriber("debug", io::stdout)?;
 
     let c = Configuration::load()?;
 
@@ -19,7 +19,10 @@ async fn main() -> Result<(), anyhow::Error> {
     let addr = c.app.addr();
 
     let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
-    tracing::info!("Server is running on http://{}", addr);
+    tracing::info!(
+        addr = %format_args!("http://{}", addr),
+        "Server is running"
+    );
     axum::serve(listener, app).await?;
     Ok(())
 }

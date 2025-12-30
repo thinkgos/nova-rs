@@ -44,7 +44,7 @@ RUN apt update -y && \
 COPY --from=builder /app/target/release/app app
 COPY conf conf
 
-ENV APP_DEPLOY_MODE prod
+ENV NOVA_DEPLOY_MODE prod
 
 # When `docker run` is executed, launch the binary!
 ENTRYPOINT ["./app"]

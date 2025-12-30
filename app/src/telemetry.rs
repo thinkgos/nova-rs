@@ -1,13 +1,11 @@
-use tracing::{Subscriber, subscriber};
-use tracing_bunyan_formatter::{BunyanFormattingLayer, JsonStorageLayer};
-use tracing_log::LogTracer;
-use tracing_subscriber::{EnvFilter, Registry, fmt::MakeWriter, layer::SubscriberExt};
+use tracing_subscriber::{
+    EnvFilter, Registry, fmt,
+    fmt::{MakeWriter, time},
+    layer::SubscriberExt,
+    util::SubscriberInitExt,
+};
 
-pub fn get_subscriber<Sink>(
-    name: &str,
-    default_env_filter: &str,
-    sink: Sink,
-) -> impl Subscriber + Send + Sync
+pub fn init_subscriber<Sink>(default_env_filter: &str, sink: Sink) -> anyhow::Result<()>
 where
     // This "weird" syntax is a higher-ranked trait bound (HRTB)
     // It basically means that Sink implements the `MakeWriter`
@@ -16,29 +14,21 @@ where
     // for more details.
     Sink: for<'a> MakeWriter<'a> + Send + Sync + 'static,
 {
-    // We are falling back to printing all spans at info-level or above
-    // if the RUST_LOG environment variable has not been set.
-    let env_filter =
-        EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new(default_env_filter));
-    // formatting layer
-    let formatting_layer = BunyanFormattingLayer::new(
-        name.into(),
-        // Output the formatted spans to stdout.
-        sink,
-    );
+    // if the RUST_LOG environment variable has not been set, then use default.
+    let layer_env_filter = EnvFilter::builder()
+        .with_default_directive(default_env_filter.parse()?)
+        .from_env_lossy();
+    let layer_formatting = fmt::layer()
+        .json()
+        .with_timer(time::LocalTime::rfc_3339())
+        .with_line_number(true)
+        .with_writer(sink)
+        .with_file(true);
     // The `with` method is provided by `SubscriberExt`, an extension
     // trait for `Subscriber` exposed by `tracing_subscriber`
     Registry::default()
-        .with(env_filter)
-        .with(JsonStorageLayer)
-        .with(formatting_layer)
-}
-
-pub fn init_subscriber(subscriber: impl Subscriber + Send + Sync) {
-    // Redirect all `log`'s events to our subscriber
-    LogTracer::init().expect("Failed to set logger");
-
-    // `set_global_default` can be used by applications to specify
-    // what subscriber should be used to process spans.
-    subscriber::set_global_default(subscriber).expect("Failed to set subscriber");
+        .with(layer_env_filter)
+        .with(layer_formatting)
+        .try_init()?;
+    Ok(())
 }
