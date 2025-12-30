@@ -47,6 +47,7 @@ bytes = "1.10"
 config = "0.15"
 secrecy = {version = "0.10", features = ["serde"]}
 strum = {version = "0.27", features = ["derive"]}
+chrono = { version = "0.4", features = ["serde"] }
 
 # error 
 anyhow = "1"
@@ -62,7 +63,7 @@ tracing = {version = "0.1", features = ["log"]}
 tracing-subscriber = { version = "0.3", features = ["env-filter", "json", "time", "local-time"] }
 
 # swagger
-utoipa = { version = "5.3", features = ["axum_extras", "chrono"] }
+utoipa = { version = "5.4", features = ["axum_extras", "chrono"] }
 utoipa-swagger-ui = { version = "9.0", features = ["axum"] }
 
 # orm

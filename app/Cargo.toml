@@ -13,6 +13,7 @@ repository.workspace = true
 
 [dependencies]
 configuration = {path = "../crates/configuration"}
+handlers = {path = "../crates/handlers"}
 
 tokio.workspace = true
 axum.workspace = true
