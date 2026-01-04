@@ -16,14 +16,12 @@ default-members = [
 ]
 
 [workspace.package]
-version = "0.1.0-rc0"   
+version = "0.1.0-rc0"
 authors = ["thinkgo <thinkgo@aliyun.com>"]
 edition = "2024"
 rust-version = "1.92.0"
 description = "nova-rs is an admin backend."
-keywords =[
-    "backend"
-]
+keywords = ["backend"]
 license = "Apache-2.0"
 readme = "README.md"
 homepage = "https://github.com/thinkgos/nova-rs"
@@ -36,7 +34,9 @@ repository = "https://github.com/thinkgos/nova-rs"
 [workspace.dependencies]
 # web
 axum = "0.8"
-jsonwebtoken = "10"
+jsonwebtoken = { version = "10", features = ["rust_crypto"] }
+tower = { version = "*" }
+tower-http = { version = "*", features = ["cors", "trace", "request-id"] }
 
 # runtime
 tokio = { version = "1.0", features = ["full"] }
@@ -45,9 +45,15 @@ tokio = { version = "1.0", features = ["full"] }
 rand = "0.9"
 bytes = "1.10"
 config = "0.15"
-secrecy = {version = "0.10", features = ["serde"]}
-strum = {version = "0.27", features = ["derive"]}
+secrecy = { version = "0.10", features = ["serde"] }
+strum = { version = "0.27", features = ["derive"] }
 chrono = { version = "0.4", features = ["serde"] }
+bcrypt = "0.17"
+cipher = "0.4"
+aes = "0.8"
+cbc = "0.1"
+base64 = "0.22"
+ulid = "1.2"
 
 # error 
 anyhow = "1"
@@ -59,15 +65,24 @@ serde_json = "1.0"
 
 # tracing
 log = "0.4"
-tracing = {version = "0.1", features = ["log"]}
-tracing-subscriber = { version = "0.3", features = ["env-filter", "json", "time", "local-time"] }
+tracing = { version = "0.1", features = ["log"] }
+tracing-subscriber = { version = "0.3", features = [
+    "env-filter",
+    "json",
+    "time",
+    "local-time",
+] }
 
 # swagger
 utoipa = { version = "5.4", features = ["axum_extras", "chrono"] }
 utoipa-swagger-ui = { version = "9.0", features = ["axum"] }
 
 # orm
-sea-orm = {version = "1", features = [ "sqlx-mysql", "runtime-tokio-rustls", "macros"]}
+sea-orm = { version = "1", features = [
+    "sqlx-mysql",
+    "runtime-tokio-rustls",
+    "macros",
+] }
 sea-query = "0.32"
 
 

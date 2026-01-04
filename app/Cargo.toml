@@ -11,14 +11,23 @@ readme.workspace = true
 homepage.workspace = true
 repository.workspace = true
 
+[dev-dependencies]
+bcrypt.workspace = true
+jsonwebtoken.workspace = true
+chrono.workspace = true
+
 [dependencies]
 configuration = {path = "../crates/configuration"}
 handlers = {path = "../crates/handlers"}
 
-tokio.workspace = true
 axum.workspace = true
+tower.workspace = true
+tower-http.workspace = true
+tokio.workspace = true
+serde.workspace = true
 serde_json.workspace = true
 anyhow.workspace = true
+ulid.workspace = true
 
 # tracing
 tracing.workspace = true

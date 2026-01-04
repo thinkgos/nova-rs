@@ -13,6 +13,7 @@ pub fn route_v1() -> Router {
 }
 
 #[derive(Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct LoginRequest {
     /// 会话id
     session_id: String,
@@ -27,6 +28,7 @@ pub struct LoginRequest {
 }
 
 #[derive(Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct LoginReply {
     /// 访问令牌
     access_token: String,

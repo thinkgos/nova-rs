@@ -20,6 +20,7 @@ utoipa.workspace = true
 axum.workspace = true
 serde.workspace = true
 chrono.workspace = true
+tracing.workspace = true
 
 [lints]
 workspace = true
