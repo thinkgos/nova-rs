@@ -1,11 +1,11 @@
-use std::time::Duration;
+use std::{sync::Arc, time::Duration};
 
 use axum::{
     Router,
     extract::MatchedPath,
-    http::{self, HeaderName, Method, Request},
+    http::{self, Method, Request},
 };
-use handlers::{misc, passport, swagger};
+use handlers::{misc, openapi, passport};
 use tower::ServiceBuilder;
 use tower_http::{
     classify::ServerErrorsFailureClass,
@@ -16,20 +16,20 @@ use tower_http::{
 use tracing::{error, info, info_span};
 use ulid::Ulid;
 
+use app_error::AppError;
+use types::constant;
+
 const APP_NAME: &str = "nova";
-const X_TRACE_ID_HEADER: &str = "x-trace-id";
-const X_TRACE_ID: HeaderName = HeaderName::from_static(X_TRACE_ID_HEADER);
-const X_TRACE_ID_DEFAULT: &str = "SetLayerMakeTraceIdFailure";
 
 pub fn route() -> Router {
-    let set_trace_id_layer = SetRequestIdLayer::new(X_TRACE_ID, MakeRequestUlid);
+    let set_trace_id_layer = SetRequestIdLayer::new(constant::X_TRACE_ID, MakeRequestUlid);
     let trace_layer = TraceLayer::new_for_http()
         .make_span_with(|request: &http::Request<_>| {
             let trace_id = request
                 .headers()
-                .get(X_TRACE_ID_HEADER)
+                .get(constant::X_TRACE_ID_HEADER)
                 .and_then(|v| v.to_str().ok())
-                .unwrap_or(X_TRACE_ID_DEFAULT);
+                .unwrap_or(constant::X_TRACE_ID_DEFAULT);
             info_span!(
                 "http",
                 app=APP_NAME,
@@ -41,22 +41,41 @@ pub fn route() -> Router {
                 .extensions()
                 .get::<MatchedPath>()
                 .map(MatchedPath::as_str);
-            let uri = request.uri().path().to_string();
+            let path = request.uri().path().to_string();
             info!(
                 method=%request.method(),
-                route=%route.unwrap_or(&uri),
-                uri=%uri,
+                route=%route.unwrap_or(&path),
+                path=%path,
                 version=?request.version(),
                 "request",
             );
         })
         .on_response(
             |response: &http::Response<_>, latency: Duration, _span: &tracing::Span| {
-                info!(
-                    ?latency,
-                    status=%response.status(),
-                    "response",
-                );
+                let status = response.status();
+                if status.is_success() {
+                    info!(
+                        ?latency,
+                        status=%status.as_u16(),
+                        "response",
+                    );
+                } else {
+                    let err = response.extensions().get::<Arc<AppError>>().cloned();
+                    if let Some(e) = err {
+                        error!(
+                            ?latency,
+                            status=%status.as_u16(),
+                            error=%e,
+                            "response",
+                        );
+                    } else {
+                        error!(
+                            ?latency,
+                            status=%status.as_u16(),
+                            "response",
+                        );
+                    }
+                }
             },
         )
         .on_failure(
@@ -64,7 +83,7 @@ pub fn route() -> Router {
                 error!(
                     ?latency,
                     error=?err,
-                    "response failure",
+                    "server failure",
                 );
             },
         );
@@ -85,7 +104,7 @@ pub fn route() -> Router {
         .max_age(Duration::from_hours(12));
 
     Router::new()
-        .merge(swagger::route())
+        .merge(openapi::route())
         .nest(
             "/api",
             Router::new()
@@ -97,7 +116,7 @@ pub fn route() -> Router {
                 .layer(set_trace_id_layer)
                 .layer(trace_layer)
                 .layer(cors_layer)
-                .layer(PropagateRequestIdLayer::new(X_TRACE_ID)),
+                .layer(PropagateRequestIdLayer::new(constant::X_TRACE_ID)),
         )
 }
 

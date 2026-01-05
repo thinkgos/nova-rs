@@ -1,5 +1,5 @@
 [package]
-name = "handlers"
+name = "app_error"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -12,17 +12,12 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
-types = { path = "../types" }
-app_error = { path = "../app_error" }
-
-utoipa-swagger-ui.workspace = true
-utoipa.workspace = true
-
 axum.workspace = true
-serde.workspace = true
-chrono.workspace = true
-tracing.workspace = true
+sea-orm.workspace = true
+thiserror.workspace = true
 anyhow.workspace = true
+serde.workspace = true
+
 
 [lints]
 workspace = true

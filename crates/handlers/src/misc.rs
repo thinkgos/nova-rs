@@ -2,6 +2,8 @@ use axum::{Json, Router, extract::Query, response::IntoResponse, routing};
 use serde::{Deserialize, Serialize};
 use tracing::debug;
 
+use app_error::AppError;
+
 #[derive(utoipa::OpenApi)]
 #[openapi(paths(healthy), components(schemas(HealthyReply)))]
 pub(crate) struct MiscApi;
@@ -39,9 +41,13 @@ pub struct HealthyReply {
         (status = StatusCode::OK, body = inline(HealthyReply))
     ),
 )]
-pub async fn healthy(_query: Query<HealthyRequest>) -> impl IntoResponse {
+pub async fn healthy(req: Query<HealthyRequest>) -> Result<impl IntoResponse, AppError> {
     debug!("healthy called");
-    Json(HealthyReply {
-        status: "running".to_string(),
-    })
+    if req.dummy.is_some() {
+        Err(AppError::AnyhowError(anyhow::anyhow!("哈哈")))
+    } else {
+        Ok(Json(HealthyReply {
+            status: "running".to_string(),
+        }))
+    }
 }

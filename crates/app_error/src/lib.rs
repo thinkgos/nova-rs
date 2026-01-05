@@ -1,4 +1,9 @@
+//!
+//! 应用错误定义, 只用于http(如handler或中间件), 用于其它层转换为http错误响应
+//!
+
 use std::collections::HashMap;
+use std::sync::Arc;
 
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Json, Response};
@@ -17,7 +22,9 @@ struct Reply {
 
 #[derive(Debug, Error)]
 #[non_exhaustive]
-pub enum Error {
+pub enum AppError {
+    #[error("服务器异常")]
+    InternalServer,
     #[error("未经授权,请先登陆")]
     Unauthorized,
     #[error("没有权限,拒绝防问")]
@@ -50,21 +57,23 @@ pub enum Error {
     PasswordOverQuota,
 }
 
-impl IntoResponse for Error {
+impl IntoResponse for AppError {
     fn into_response(self) -> Response {
-        let status_code = match self {
-            Error::ValidationError => StatusCode::BAD_REQUEST,
-            Error::Unauthorized => StatusCode::UNAUTHORIZED,
-            Error::PermissionForbidden => StatusCode::FORBIDDEN,
-            Error::AnyhowError(_) => StatusCode::BAD_GATEWAY,
+        let status_code = match &self {
+            Self::ValidationError => StatusCode::BAD_REQUEST,
+            Self::Unauthorized => StatusCode::UNAUTHORIZED,
+            Self::PermissionForbidden => StatusCode::FORBIDDEN,
+            Self::AnyhowError(_) | Self::InternalServer => StatusCode::INTERNAL_SERVER_ERROR,
             _ => StatusCode::OK,
         };
-        let body = Json(Reply {
+        let reply = Reply {
             code: status_code.as_u16().into(),
             message: self.to_string(),
             detail: self.to_string(),
             metadata: None,
-        });
-        (status_code, body).into_response()
+        };
+        let mut response = (status_code, Json(reply)).into_response();
+        response.extensions_mut().insert(Arc::new(self));
+        response
     }
 }

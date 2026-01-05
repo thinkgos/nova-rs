@@ -9,6 +9,7 @@ members = [
     "crates/entity",
     "crates/types",
     "crates/core",
+    "crates/app_error",
 ]
 default-members = [
     "app",

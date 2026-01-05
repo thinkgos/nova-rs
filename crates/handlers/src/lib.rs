@@ -1,3 +1,3 @@
 pub mod misc;
 pub mod passport;
-pub mod swagger;
+pub mod openapi;

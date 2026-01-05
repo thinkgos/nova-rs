@@ -17,8 +17,10 @@ jsonwebtoken.workspace = true
 chrono.workspace = true
 
 [dependencies]
-configuration = {path = "../crates/configuration"}
-handlers = {path = "../crates/handlers"}
+configuration = { path = "../crates/configuration" }
+handlers = { path = "../crates/handlers" }
+types = { path = "../crates/types" }
+app_error = { path = "../crates/app_error" }
 
 axum.workspace = true
 tower.workspace = true

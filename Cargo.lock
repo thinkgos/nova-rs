@@ -60,6 +60,7 @@ name = "app"
 version = "0.1.0-rc0"
 dependencies = [
  "anyhow",
+ "app_error",
  "axum",
  "bcrypt",
  "chrono",
@@ -73,7 +74,19 @@ dependencies = [
  "tower-http",
  "tracing",
  "tracing-subscriber",
+ "types",
  "ulid",
+]
+
+[[package]]
+name = "app_error"
+version = "0.1.0-rc0"
+dependencies = [
+ "anyhow",
+ "axum",
+ "sea-orm",
+ "serde",
+ "thiserror",
 ]
 
 [[package]]
@@ -997,6 +1010,8 @@ dependencies = [
 name = "handlers"
 version = "0.1.0-rc0"
 dependencies = [
+ "anyhow",
+ "app_error",
  "axum",
  "chrono",
  "serde",
