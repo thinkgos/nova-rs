@@ -1,0 +1,36 @@
+[package]
+name = "nova"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description.workspace = true
+keywords.workspace = true
+license.workspace = true
+readme.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+[dev-dependencies]
+bcrypt.workspace = true
+jsonwebtoken.workspace = true
+chrono.workspace = true
+
+[dependencies]
+configuration = { path = "../crates/configuration" }
+access-http = { path = "../crates/access-http" }
+types = { path = "../crates/types" }
+
+axum.workspace = true
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+
+
+# tracing
+tracing.workspace = true
+tracing-subscriber.workspace = true
+
+[lints]
+workspace = true

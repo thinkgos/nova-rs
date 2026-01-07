@@ -1,18 +1,19 @@
 [workspace]
 resolver = "2"
 members = [
-    "app",
+    "nova",
     # "testing",
-    "crates/configuration",
-    "crates/handlers",
-    "crates/middlewares",
-    "crates/entity",
-    "crates/types",
     "crates/core",
-    "crates/app_error",
+    "crates/types",
+    "crates/dal",
+    "crates/configuration",
+    "crates/readiness",
+    "crates/access-http-types",
+    "crates/access-http",
+
 ]
 default-members = [
-    "app",
+    "nova",
     # "testing",
 ]
 
@@ -27,10 +28,6 @@ license = "Apache-2.0"
 readme = "README.md"
 homepage = "https://github.com/thinkgos/nova-rs"
 repository = "https://github.com/thinkgos/nova-rs"
-
-# [workspace.build-dependencies]
-
-# [workspace.dev-dependencies]
 
 [workspace.dependencies]
 # web
@@ -77,9 +74,10 @@ tracing-subscriber = { version = "0.3", features = [
 # swagger
 utoipa = { version = "5.4", features = ["axum_extras", "chrono"] }
 utoipa-swagger-ui = { version = "9.0", features = ["axum"] }
+utoipa-config = { version = "0.1" }
 
 # orm
-sea-orm = { version = "1", features = [
+sea-orm = { version = "2.0.0-rc", features = [
     "sqlx-mysql",
     "runtime-tokio-rustls",
     "macros",

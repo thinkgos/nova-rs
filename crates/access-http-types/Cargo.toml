@@ -1,5 +1,5 @@
 [package]
-name = "types"
+name = "access-http-types"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -12,8 +12,10 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
-axum.workspace = true
 serde.workspace = true
+chrono.workspace = true
+
+utoipa.workspace = true
 
 [lints]
 workspace = true

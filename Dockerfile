@@ -41,10 +41,10 @@ RUN apt update -y && \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /app/target/release/app app
+COPY --from=builder /app/target/release/nova nova
 COPY conf conf
 
 ENV NOVA_DEPLOY_MODE prod
 
 # When `docker run` is executed, launch the binary!
-ENTRYPOINT ["./app"]
+ENTRYPOINT ["./nova"]
