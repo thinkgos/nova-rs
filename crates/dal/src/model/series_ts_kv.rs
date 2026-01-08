@@ -3,9 +3,8 @@
 use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 
-#[derive(
-    Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize, utoipa :: ToSchema,
-)]
+#[sea_orm::model]
+#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize, utoipa::ToSchema)]
 #[sea_orm(table_name = "series_ts_kv")]
 #[serde(rename_all = "camelCase")]
 pub struct Model {
@@ -23,8 +22,5 @@ pub struct Model {
     pub product_id: String,
     pub device_id: String,
 }
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}

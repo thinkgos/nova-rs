@@ -3,6 +3,7 @@ use strum::{Display, EnumCount, EnumString, VariantNames};
 /// 应用程序运行时环境
 #[derive(PartialEq, Eq, Debug, Display, EnumString, EnumCount, VariantNames)]
 #[strum(serialize_all = "snake_case")]
+#[derive(Default)]
 pub enum Deploy {
     /// 本地
     Local,
@@ -13,6 +14,7 @@ pub enum Deploy {
     /// 预发布
     Uat,
     /// 生产
+    #[default]
     Prod,
 }
 
