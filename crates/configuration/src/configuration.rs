@@ -14,7 +14,7 @@ pub struct Configuration {
 }
 
 impl Configuration {
-    pub fn load() -> Result<Self, anyhow::Error> {
+    pub fn try_init() -> Result<Self, anyhow::Error> {
         let deploy: Deploy = env::var("NOVA_DEPLOY_MODE")
             .unwrap_or_else(|_| Deploy::Dev.to_string())
             .parse()?;
@@ -36,8 +36,6 @@ impl Configuration {
             )
             .build()?
             .try_deserialize()?;
-
-        log::debug!("{:?}", c);
         Ok(c)
     }
 }

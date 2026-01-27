@@ -10,6 +10,6 @@ pub struct HealthyRequest {
 #[derive(Debug, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct HealthyReply {
-    /// running status
-    pub status: String,
+    /// db status
+    pub db: bool,
 }

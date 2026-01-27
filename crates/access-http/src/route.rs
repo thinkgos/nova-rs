@@ -5,7 +5,6 @@ use axum::{
     extract::MatchedPath,
     http::{self, Method, Request},
 };
-
 use tower::ServiceBuilder;
 use tower_http::{
     classify::ServerErrorsFailureClass,
@@ -19,11 +18,12 @@ use ulid::Ulid;
 use crate::app_error::AppError;
 use crate::handlers::{misc, passport};
 use crate::openapi;
+use readiness::app_state::AppState;
 use types::constant;
 
 const APP_NAME: &str = "nova";
 
-pub fn route() -> Router {
+pub fn route(state: AppState) -> Router {
     let set_trace_id_layer = SetRequestIdLayer::new(constant::X_TRACE_ID, MakeRequestUlid);
     let trace_layer = TraceLayer::new_for_http()
         .make_span_with(|request: &http::Request<_>| {
@@ -105,14 +105,13 @@ pub fn route() -> Router {
         // .allow_credentials(true)
         .max_age(Duration::from_hours(12));
 
+    let api = Router::new()
+        .merge(misc::route_v1())
+        .merge(passport::route_v1());
+
     Router::new()
         .merge(openapi::route())
-        .nest(
-            "/api",
-            Router::new()
-                .merge(misc::route_v1())
-                .merge(passport::route_v1()),
-        )
+        .nest("/api", api)
         .layer(
             ServiceBuilder::new()
                 .layer(set_trace_id_layer)
@@ -120,6 +119,7 @@ pub fn route() -> Router {
                 .layer(cors_layer)
                 .layer(PropagateRequestIdLayer::new(constant::X_TRACE_ID)),
         )
+        .with_state(state)
 }
 
 /// A [`MakeRequestId`] that generates `Ulid`s.

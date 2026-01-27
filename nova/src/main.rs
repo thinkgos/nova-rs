@@ -2,15 +2,23 @@ use std::io;
 // use std::net::SocketAddr;
 
 use access_http::route;
-use configuration::Configuration;
 use nova::telemetry;
+use readiness::app_state;
 
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
     telemetry::init_subscriber("debug", io::stdout)?;
+    configuration::try_init()?;
 
-    let c = Configuration::load()?;
-    let app = route::route();
+    let c = configuration::use_config();
+
+    tracing::info!("{:?}", c);
+
+    let state = app_state::AppState {
+        db: app_state::new_database_connection(&c.database).await?,
+    };
+
+    let app = route::route(state);
     let addr = c.app.addr();
     let listener = tokio::net::TcpListener::bind(&addr).await?;
     tracing::info!(

@@ -14,6 +14,9 @@ repository.workspace = true
 [dependencies]
 types = { path = "../types" }
 access-http-types = { path = "../access-http-types" }
+configuration = { path = "../configuration" }
+readiness = { path = "../readiness" }
+dal = { path = "../dal" }
 
 axum.workspace = true
 tower.workspace = true

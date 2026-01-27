@@ -10,6 +10,9 @@ dependencies = [
  "anyhow",
  "axum",
  "chrono",
+ "configuration",
+ "dal",
+ "readiness",
  "sea-orm",
  "serde",
  "thiserror",
@@ -1581,6 +1584,7 @@ dependencies = [
  "chrono",
  "configuration",
  "jsonwebtoken",
+ "readiness",
  "serde",
  "serde_json",
  "tokio",
@@ -2092,6 +2096,12 @@ dependencies = [
 [[package]]
 name = "readiness"
 version = "0.1.0-rc0"
+dependencies = [
+ "configuration",
+ "log",
+ "sea-orm",
+ "secrecy",
+]
 
 [[package]]
 name = "redox_syscall"

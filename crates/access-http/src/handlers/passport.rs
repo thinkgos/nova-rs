@@ -1,12 +1,13 @@
-use axum::{Json, Router, response::IntoResponse, routing};
+use axum::{Json, Router, extract::State, response::IntoResponse, routing};
 
 use access_http_types::passport::{LoginReply, LoginRequest};
+use readiness::app_state::AppState;
 
 #[derive(utoipa::OpenApi)]
 #[openapi(paths(login), components(schemas(LoginReply)))]
 pub(crate) struct PassportApi;
 
-pub fn route_v1() -> Router {
+pub fn route_v1() -> impl Into<Router<AppState>> {
     Router::new().nest(
         "/v1",
         Router::new().route("/passport/login", routing::post(login)),
@@ -25,7 +26,7 @@ pub fn route_v1() -> Router {
         (status = StatusCode::OK, body = inline(LoginReply))
     ),
 )]
-pub async fn login(_req: Json<LoginRequest>) -> impl IntoResponse {
+pub async fn login(State(_state): State<AppState>, _req: Json<LoginRequest>) -> impl IntoResponse {
     Json(LoginReply {
         access_token: "token".to_string(),
         refresh_token: "refresh_token".to_string(),

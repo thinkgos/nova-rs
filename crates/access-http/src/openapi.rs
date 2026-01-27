@@ -1,4 +1,5 @@
 use axum::Router;
+use readiness::app_state::AppState;
 use utoipa::{
     Modify, OpenApi,
     openapi::security::{ApiKey, ApiKeyValue, HttpAuthScheme, HttpBuilder, SecurityScheme},
@@ -8,7 +9,7 @@ use utoipa_swagger_ui::SwaggerUi;
 use crate::handlers::misc;
 use crate::handlers::passport;
 
-pub fn route() -> impl Into<Router> {
+pub fn route() -> impl Into<Router<AppState>> {
     SwaggerUi::new("/swagger/index.html").url("/swagger/doc.json", ApiDoc::openapi())
 }
 

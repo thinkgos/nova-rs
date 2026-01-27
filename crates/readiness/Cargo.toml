@@ -12,6 +12,11 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
+configuration = { path = "../configuration" }
+
+sea-orm.workspace = true
+secrecy.workspace = true
+log.workspace = true
 
 [lints]
 workspace = true

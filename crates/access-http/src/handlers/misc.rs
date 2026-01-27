@@ -1,14 +1,19 @@
-use axum::{Json, Router, extract::Query, response::IntoResponse, routing};
-use tracing::debug;
+use axum::{
+    Json, Router,
+    extract::{Query, State},
+    response::IntoResponse,
+    routing,
+};
 
 use crate::app_error::AppError;
 use access_http_types::misc::{HealthyReply, HealthyRequest};
+use readiness::app_state::AppState;
 
 #[derive(utoipa::OpenApi)]
 #[openapi(paths(healthy), components(schemas(HealthyReply)))]
 pub(crate) struct MiscApi;
 
-pub fn route_v1() -> Router {
+pub fn route_v1() -> impl Into<Router<AppState>> {
     Router::new().nest(
         "/v1",
         Router::new().route("/public/healthy", routing::get(healthy)),
@@ -27,13 +32,15 @@ pub fn route_v1() -> Router {
         (status = StatusCode::OK, body = inline(HealthyReply))
     ),
 )]
-pub async fn healthy(req: Query<HealthyRequest>) -> Result<impl IntoResponse, AppError> {
-    debug!("healthy called");
+pub async fn healthy(
+    State(state): State<AppState>,
+    req: Query<HealthyRequest>,
+) -> Result<impl IntoResponse, AppError> {
     if req.dummy.is_some() {
         Err(AppError::AnyhowError(anyhow::anyhow!("哈哈")))
     } else {
         Ok(Json(HealthyReply {
-            status: "running".to_string(),
+            db: state.db.ping().await.is_ok(),
         }))
     }
 }
