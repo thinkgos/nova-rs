@@ -1,11 +1,10 @@
 use axum::{
-    Json, Router,
+    Router,
     extract::{Query, State},
-    response::IntoResponse,
     routing,
 };
 
-use crate::app_error::AppError;
+use crate::error::{AppError, Result};
 use access_http_types::misc::{HealthyReply, HealthyRequest};
 use readiness::app_state::AppState;
 
@@ -35,12 +34,13 @@ pub fn route_v1() -> impl Into<Router<AppState>> {
 pub async fn healthy(
     State(state): State<AppState>,
     req: Query<HealthyRequest>,
-) -> Result<impl IntoResponse, AppError> {
+) -> Result<HealthyReply> {
     if req.dummy.is_some() {
         Err(AppError::AnyhowError(anyhow::anyhow!("哈哈")))
     } else {
-        Ok(Json(HealthyReply {
+        Ok(HealthyReply {
             db: state.db.ping().await.is_ok(),
-        }))
+        }
+        .into())
     }
 }

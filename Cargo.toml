@@ -34,7 +34,12 @@ repository = "https://github.com/thinkgos/nova-rs"
 axum = "0.8"
 jsonwebtoken = { version = "10", features = ["rust_crypto"] }
 tower = { version = "*" }
-tower-http = { version = "*", features = ["cors", "trace", "request-id"] }
+tower-http = { version = "*", features = [
+    "cors",
+    "trace",
+    "request-id",
+    "map-response-body",
+] }
 
 # runtime
 tokio = { version = "1.0", features = ["full"] }

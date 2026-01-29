@@ -7,7 +7,7 @@ use readiness::app_state;
 
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
-    telemetry::init_subscriber("debug", io::stdout)?;
+    telemetry::try_init_subscriber("debug", io::stdout)?;
     configuration::try_init()?;
 
     let c = configuration::use_config();

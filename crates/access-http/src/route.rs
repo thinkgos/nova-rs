@@ -7,7 +7,6 @@ use axum::{
 };
 use tower::ServiceBuilder;
 use tower_http::{
-    classify::ServerErrorsFailureClass,
     cors::{self, AllowOrigin, CorsLayer},
     request_id::{MakeRequestId, PropagateRequestIdLayer, RequestId, SetRequestIdLayer},
     trace::TraceLayer,
@@ -15,7 +14,7 @@ use tower_http::{
 use tracing::{error, info, info_span};
 use ulid::Ulid;
 
-use crate::app_error::AppError;
+use crate::error::AppError;
 use crate::handlers::{misc, passport};
 use crate::openapi;
 use readiness::app_state::AppState;
@@ -24,7 +23,7 @@ use types::constant;
 const APP_NAME: &str = "nova";
 
 pub fn route(state: AppState) -> Router {
-    let set_trace_id_layer = SetRequestIdLayer::new(constant::X_TRACE_ID, MakeRequestUlid);
+    let inject_trace_id_layer = SetRequestIdLayer::new(constant::X_TRACE_ID, MakeRequestUlid);
     let trace_layer = TraceLayer::new_for_http()
         .make_span_with(|request: &http::Request<_>| {
             let trace_id = request
@@ -49,7 +48,7 @@ pub fn route(state: AppState) -> Router {
                 route=%route.unwrap_or(&path),
                 path=%path,
                 version=?request.version(),
-                "request",
+                "received request",
             );
         })
         .on_response(
@@ -59,36 +58,29 @@ pub fn route(state: AppState) -> Router {
                     info!(
                         ?latency,
                         status=%status.as_u16(),
-                        "response",
+                        "finished processing request",
                     );
                 } else {
+                    // 这个错误是在AppError中初始化的插入的
                     let err = response.extensions().get::<Arc<AppError>>().cloned();
                     if let Some(e) = err {
                         error!(
                             ?latency,
                             status=%status.as_u16(),
                             error=%e,
-                            "response",
+                            "finished processing request",
                         );
                     } else {
                         error!(
                             ?latency,
                             status=%status.as_u16(),
-                            "response",
+                            "finished processing request",
                         );
                     }
                 }
             },
         )
-        .on_failure(
-            |err: ServerErrorsFailureClass, latency: Duration, _span: &tracing::Span| {
-                error!(
-                    ?latency,
-                    error=?err,
-                    "server failure",
-                );
-            },
-        );
+        .on_failure(());
 
     let cors_layer = CorsLayer::new()
         .allow_origin(AllowOrigin::any())
@@ -105,6 +97,8 @@ pub fn route(state: AppState) -> Router {
         // .allow_credentials(true)
         .max_age(Duration::from_hours(12));
 
+    let propagate_trace_id_layer = PropagateRequestIdLayer::new(constant::X_TRACE_ID);
+
     let api = Router::new()
         .merge(misc::route_v1())
         .merge(passport::route_v1());
@@ -114,10 +108,10 @@ pub fn route(state: AppState) -> Router {
         .nest("/api", api)
         .layer(
             ServiceBuilder::new()
-                .layer(set_trace_id_layer)
+                .layer(inject_trace_id_layer)
                 .layer(trace_layer)
                 .layer(cors_layer)
-                .layer(PropagateRequestIdLayer::new(constant::X_TRACE_ID)),
+                .layer(propagate_trace_id_layer),
         )
         .with_state(state)
 }

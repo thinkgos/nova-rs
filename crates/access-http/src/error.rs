@@ -2,23 +2,17 @@
 //! 应用错误定义, 只用于http, 用于其它层转换为http错误响应
 //!
 
-use std::collections::HashMap;
+use std::result;
 use std::sync::Arc;
 
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Json, Response};
 use sea_orm::DbErr;
-use serde::Serialize;
 use thiserror::Error;
 
-#[derive(Debug, Serialize)]
-pub(crate) struct Reply {
-    code: usize,
-    message: String,
-    detail: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    metadata: Option<HashMap<String, String>>,
-}
+use types::responded::Reply;
+
+pub type Result<T> = result::Result<Reply<T>, AppError>;
 
 #[derive(Debug, Error)]
 #[non_exhaustive]
@@ -70,7 +64,7 @@ impl IntoResponse for AppError {
             code: status_code.as_u16().into(),
             message: self.to_string(),
             detail: self.to_string(),
-            metadata: None,
+            data: (),
         };
         let mut response = (status_code, Json(reply)).into_response();
         response.extensions_mut().insert(Arc::new(self));

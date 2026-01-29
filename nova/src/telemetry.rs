@@ -5,7 +5,7 @@ use tracing_subscriber::{
     util::SubscriberInitExt,
 };
 
-pub fn init_subscriber<Sink>(default_env_filter: &str, sink: Sink) -> anyhow::Result<()>
+pub fn try_init_subscriber<Sink>(default_env_filter: &str, sink: Sink) -> anyhow::Result<()>
 where
     // This "weird" syntax is a higher-ranked trait bound (HRTB)
     // It basically means that Sink implements the `MakeWriter`

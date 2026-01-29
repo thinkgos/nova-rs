@@ -1,5 +1,6 @@
-use axum::{Json, Router, extract::State, response::IntoResponse, routing};
+use axum::{Json, Router, extract::State, routing};
 
+use crate::error::Result;
 use access_http_types::passport::{LoginReply, LoginRequest};
 use readiness::app_state::AppState;
 
@@ -26,10 +27,11 @@ pub fn route_v1() -> impl Into<Router<AppState>> {
         (status = StatusCode::OK, body = inline(LoginReply))
     ),
 )]
-pub async fn login(State(_state): State<AppState>, _req: Json<LoginRequest>) -> impl IntoResponse {
-    Json(LoginReply {
+pub async fn login(State(_state): State<AppState>, _req: Json<LoginRequest>) -> Result<LoginReply> {
+    Ok(LoginReply {
         access_token: "token".to_string(),
         refresh_token: "refresh_token".to_string(),
         expires_at: chrono::Utc::now().timestamp(),
-    })
+    }
+    .into())
 }
