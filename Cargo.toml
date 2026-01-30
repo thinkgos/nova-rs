@@ -51,7 +51,7 @@ config = "0.15"
 secrecy = { version = "0.10", features = ["serde"] }
 strum = { version = "0.27", features = ["derive"] }
 chrono = { version = "0.4", features = ["serde"] }
-bcrypt = "0.17"
+bcrypt = "0.18"
 cipher = "0.4"
 aes = "0.8"
 cbc = "0.1"
