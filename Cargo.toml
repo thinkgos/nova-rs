@@ -49,7 +49,7 @@ rand = "0.9"
 bytes = "1.10"
 config = "0.15"
 secrecy = { version = "0.10", features = ["serde"] }
-strum = { version = "0.27", features = ["derive"] }
+strum = { version = "0.28", features = ["derive"] }
 chrono = { version = "0.4", features = ["serde"] }
 bcrypt = "0.17"
 cipher = "0.4"
